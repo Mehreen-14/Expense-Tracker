@@ -5,7 +5,7 @@ A full-stack expense tracking application with an **Angular 17** frontend and **
 ## Features
 
 - Add, edit, duplicate, and delete expenses
-- Dashboard with humanized period summaries:
+- Dashboard with period summaries:
   - **Today / Yesterday**
   - **This week / Last week**
   - **This month / Last month**
@@ -13,13 +13,10 @@ A full-stack expense tracking application with an **Angular 17** frontend and **
 - 6-month spending trend chart and daily spending bars
 - Category color dots and per-transaction notes
 - Favorites and recurring expense flags
-- Bulk delete with confirmation modal
 - Split expenses among friends with per-participant paid tracking
 - Recurring bill manager
 - **SSLCommerz payment integration** (sandbox) with success/fail/cancel callbacks
-- **Voice-to-form smart input** — speak a phrase like *"150 taka chicken biryani at Mr Diy"* and the form fills itself
-- Dark mode toggle with preference persistence
-- Responsive Remix Icon UI throughout
+- **Voice-to-form smart input** — speak a phrase  and the form fills itself
 
 ## Repository layout
 
