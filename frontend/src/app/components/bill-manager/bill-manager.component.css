@@ -1,0 +1,263 @@
+.bill-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bill-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.total-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.total-amount {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.add-btn {
+  border: none;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.add-btn:hover {
+  transform: translateY(-1px);
+}
+
+.empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border-radius: 12px;
+  border: 1px dashed var(--border-strong);
+}
+
+.bill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
+}
+
+.bill-item.overdue {
+  border-color: #fecaca;
+  background: var(--error-bg);
+}
+
+.bill-item.soon {
+  border-color: #fed7aa;
+  background: var(--warning-bg);
+}
+
+.bill-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bill-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.inactive-tag {
+  font-size: 0.7rem;
+  background: var(--border);
+  color: var(--text-muted);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  font-weight: 500;
+}
+
+.bill-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.due-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.due-badge.overdue {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.due-badge.soon {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.due-badge.ok {
+  background: var(--accent-bg);
+  color: #059669;
+}
+
+.bill-cat {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.bill-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.bill-amount {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.bill-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.act-btn {
+  border: none;
+  background: var(--bg-surface-alt);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.act-btn:hover {
+  background: var(--border);
+}
+
+.act-btn.danger {
+  color: #dc2626;
+}
+
+.act-btn.danger:hover {
+  background: #fee2e2;
+}
+
+.act-btn.pause {
+  color: #d97706;
+}
+
+.act-btn.resume {
+  color: #059669;
+}
+
+/* Form */
+.form-section h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.85rem;
+  flex: 1;
+}
+
+.field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.field input,
+.field select {
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.875rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--accent);
+  border-color: var(--accent);
+}
+
+.field-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.save-btn {
+  border: none;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.55rem 1.25rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  border: none;
+  background: var(--bg-surface-alt);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}

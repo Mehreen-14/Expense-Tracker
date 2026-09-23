@@ -1,0 +1,35 @@
+<div class="card breakdown-card">
+  <div class="card-header">
+    <h2>Category Breakdown</h2>
+    <p>Where your money goes this month.</p>
+  </div>
+
+  @if (categories.length === 0) {
+    <div class="empty">No expenses this month yet.</div>
+  } @else {
+    <div class="breakdown-list">
+      @for (cat of categories; track cat.category) {
+        <div class="breakdown-row">
+          <div class="row-header">
+            <span class="cat-name">
+              <span class="dot" [style.background]="barColor(cat.category)"></span>
+              {{ cat.category }}
+            </span>
+            <span class="cat-amount">{{ cat.total | currency:'BDT':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              [style.width.%]="cat.percentage"
+              [style.background]="barColor(cat.category)">
+            </div>
+          </div>
+          <div class="row-meta">
+            <span>{{ cat.percentage | number:'1.0-1' }}%</span>
+            <span>{{ cat.count }} expense{{ cat.count === 1 ? '' : 's' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
