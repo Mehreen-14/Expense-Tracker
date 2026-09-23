@@ -11,7 +11,6 @@ A full-stack expense tracking application with an **Angular 17** frontend and **
   - **This month / Last month**
   - **This year / Last year**
 - 6-month spending trend chart and daily spending bars
-- Category color dots and per-transaction notes
 - Favorites and recurring expense flags
 - Split expenses among friends with per-participant paid tracking
 - Recurring bill manager
