@@ -1,0 +1,266 @@
+<div class="card list-card">
+  <div class="list-header">
+    <div>
+      <h2>All Expenses</h2>
+      <p>
+        @if (quickFilter !== 'all' || hasActiveFilters) {
+          {{ filteredExpenses.length }} results
+          @if (total > 0) {
+            · {{ total | currency:'BDT':'symbol-narrow':'1.2-2' }} total
+          }
+        } @else {
+          {{ selectedMonthLabel }} {{ selectedYear }} · {{ filteredExpenses.length }} recorded · {{ total | currency:'BDT':'symbol-narrow':'1.2-2' }} total
+        }
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" type="button" (click)="showFilters = !showFilters" [class.active]="showFilters" title="Toggle filters">
+        <i class="ri-filter-3-line"></i> {{ showFilters ? 'Hide Filters' : 'Filters' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Filters -->
+  <div class="quick-filters">
+    <button type="button" class="quick-filter-btn" [class.active]="quickFilter === 'all' && !hasActiveFilters" (click)="clearAllFilters(); applyQuickFilter('all')">All</button>
+    <button type="button" class="quick-filter-btn" [class.active]="quickFilter === 'today'" (click)="applyQuickFilter('today')">Today</button>
+    <button type="button" class="quick-filter-btn" [class.active]="quickFilter === 'thisWeek'" (click)="applyQuickFilter('thisWeek')">This Week</button>
+    <button type="button" class="quick-filter-btn" [class.active]="quickFilter === 'last30Days'" (click)="applyQuickFilter('last30Days')">Last 30 Days</button>
+    <button type="button" class="quick-filter-btn" [class.active]="quickFilter === 'thisYear'" (click)="applyQuickFilter('thisYear')">This Year</button>
+    <div class="quick-filter-divider"></div>
+    <button type="button" class="quick-filter-btn star-btn" [class.active]="favoritesOnly" (click)="favoritesOnly = !favoritesOnly; quickFilter = 'all'">
+      <i class="ri-star-fill"></i> Favorites
+    </button>
+    <button type="button" class="quick-filter-btn recurring-btn" [class.active]="recurringOnly" (click)="recurringOnly = !recurringOnly; quickFilter = 'all'">
+      <i class="ri-loop-right-line"></i> Recurring
+    </button>
+  </div>
+
+  <!-- Advanced Filters Panel -->
+  @if (showFilters) {
+    <div class="filters-panel">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Search</label>
+          <input type="text" id="expense-search" placeholder="Search description... (press /)" [(ngModel)]="searchQuery" (keydown)="onSearchKeydown($event)">
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Categories</label>
+          <div class="category-chips">
+            @for (cat of categories; track cat) {
+              <button type="button" class="category-chip" [class.active]="selectedCategories.includes(cat)" (click)="toggleCategory(cat)">
+                {{ cat }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-row three-col">
+        <div class="filter-group">
+          <label>Date From</label>
+          <input type="date" [(ngModel)]="dateFrom">
+        </div>
+        <div class="filter-group">
+          <label>Date To</label>
+          <input type="date" [(ngModel)]="dateTo">
+        </div>
+        <div class="filter-group">
+          <label>Sort By</label>
+          <div class="sort-btns">
+            <button type="button" class="sort-btn" [class.active]="sortBy === 'date'" (click)="setSort('date')">
+              Date {{ sortBy === 'date' ? (sortDir === 'asc' ? '↑' : '↓') : '' }}
+            </button>
+            <button type="button" class="sort-btn" [class.active]="sortBy === 'amount'" (click)="setSort('amount')">
+              Amount {{ sortBy === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : '' }}
+            </button>
+            <button type="button" class="sort-btn" [class.active]="sortBy === 'description'" (click)="setSort('description')">
+              Name {{ sortBy === 'description' ? (sortDir === 'asc' ? '↑' : '↓') : '' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Amount Range (৳)</label>
+          <div class="amount-range">
+            <input type="number" placeholder="Min" [(ngModel)]="amountMin" min="0" step="0.01">
+            <span class="range-sep">–</span>
+            <input type="number" placeholder="Max" [(ngModel)]="amountMax" min="0" step="0.01">
+          </div>
+        </div>
+        @if (hasActiveFilters) {
+          <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear All Filters</button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Stats Bar -->
+  @if (filteredExpenses.length > 0) {
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-value">{{ filteredExpenses.length }}</span>
+        <span class="stat-label">Expenses</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ total | currency:'BDT':'symbol-narrow':'1.2-2' }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ average | currency:'BDT':'symbol-narrow':'1.2-2' }}</span>
+        <span class="stat-label">Average</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value highest">{{ highest | currency:'BDT':'symbol-narrow':'1.2-2' }}</span>
+        <span class="stat-label">Highest</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value lowest">{{ lowest | currency:'BDT':'symbol-narrow':'1.2-2' }}</span>
+        <span class="stat-label">Lowest</span>
+      </div>
+    </div>
+  }
+
+  <!-- Bulk Actions Bar -->
+  @if (selectedIds.size > 0) {
+    <div class="bulk-bar">
+      <span>{{ selectedIds.size }} selected</span>
+      <button class="bulk-delete-btn" type="button" (click)="onBulkDelete()">Delete Selected</button>
+      <button class="bulk-cancel-btn" type="button" (click)="selectedIds.clear(); selectAll = false">Cancel</button>
+    </div>
+  }
+
+  <!-- Month Tabs (only when no quick filter active) -->
+  @if (quickFilter === 'all' && !dateFrom && !dateTo) {
+    <div class="month-tabs">
+      @for (month of months; track month.index) {
+        <button
+          type="button"
+          class="month-tab"
+          [class.active]="selectedMonth === month.index"
+          (click)="selectMonth(month.index)">
+          <span class="month-name">{{ month.label }}</span>
+          @if (monthCount(month.index) > 0) {
+            <span class="month-count">{{ monthCount(month.index) }}</span>
+          }
+        </button>
+      }
+    </div>
+  }
+
+  @if (filteredExpenses.length === 0) {
+    <div class="empty">
+      @if (hasActiveFilters) {
+        <div class="empty-icon"><i class="ri-search-line"></i></div>
+        <p>No expenses match your filters.</p>
+        <button class="clear-link" type="button" (click)="clearAllFilters()">Clear all filters</button>
+      } @else {
+        <div class="empty-icon"><i class="ri-file-list-3-line"></i></div>
+        <p>No expenses in {{ selectedMonthLabel }} {{ selectedYear }}.</p>
+      }
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="checkbox-col">
+              <input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()">
+            </th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th class="icon-col"></th>
+            <th class="icon-col"></th>
+            <th class="icon-col"></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (expense of paginatedExpenses; track expense.id) {
+            <tr [class.selected]="selectedIds.has(expense.id!)" [class.favorite-row]="expense.favorite">
+              <td class="checkbox-col">
+                <input type="checkbox" [checked]="selectedIds.has(expense.id!)" (change)="toggleSelect(expense.id!)">
+              </td>
+              <td>{{ expense.expenseDate | date:'mediumDate' }}</td>
+              <td>
+                <span class="desc-text">{{ expense.description }}</span>
+                @if (expense.recurring) {
+                  <span class="recurring-badge"><i class="ri-loop-right-line"></i></span>
+                }
+                @if (expense.notes) {
+                  <span class="notes-indicator" [title]="expense.notes"><i class="ri-file-text-line"></i></span>
+                }
+              </td>
+              <td>
+                <span class="category-pill">
+                  <span class="category-dot" [style.background]="categoryColors[expense.category] || '#64748b'"></span>
+                  {{ expense.category }}
+                </span>
+              </td>
+              <td class="amount">{{ expense.amount | currency:'BDT':'symbol-narrow':'1.2-2' }}</td>
+              <td class="icon-col">
+                <button class="icon-btn-sm" type="button" (click)="toggleFavorite.emit(expense.id!)" [class.starred]="expense.favorite" title="Toggle favorite">
+                  <i [class]="expense.favorite ? 'ri-star-fill' : 'ri-star-line'"></i>
+                </button>
+              </td>
+              <td class="icon-col">
+                <button class="icon-btn-sm" type="button" (click)="toggleRecurring.emit(expense.id!)" [class.recurring-active]="expense.recurring" title="Toggle recurring">
+                  <i class="ri-loop-right-line"></i>
+                </button>
+              </td>
+              <td class="icon-col">
+                <button class="icon-btn-sm" type="button" (click)="duplicate.emit(expense)" title="Duplicate expense">
+                  <i class="ri-file-copy-line"></i>
+                </button>
+              </td>
+              <td class="actions">
+                <button class="icon-btn" type="button" (click)="edit.emit(expense)" title="Edit">Edit</button>
+                <button class="icon-btn danger" type="button" (click)="delete.emit(expense.id!)" title="Delete">Delete</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" type="button" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          ‹ Prev
+        </button>
+        @for (p of pageNumbers; track $index) {
+          <button
+            class="page-btn"
+            type="button"
+            [class.active]="p === currentPage"
+            [class.ellipsis]="p === '...'"
+            [disabled]="p === '...'"
+            (click)="goToPage(p)">
+            {{ p }}
+          </button>
+        }
+        <button class="page-btn" type="button" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          Next ›
+        </button>
+      </div>
+    }
+  }
+</div>
+
+<app-confirm-modal
+  [show]="showBulkDeleteConfirm"
+  title="Delete Expenses"
+  [message]="'Delete ' + selectedIds.size + ' expense(s)? This cannot be undone.'"
+  confirmText="Delete"
+  type="danger"
+  (confirmed)="confirmBulkDelete()"
+  (cancelled)="showBulkDeleteConfirm = false"
+/>

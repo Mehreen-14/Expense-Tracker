@@ -1,0 +1,37 @@
+<div class="dashboard">
+  <div class="card">
+    <div class="card-header">
+      <h2>Overall Overview</h2>
+      <p>Summaries for current and past periods.</p>
+    </div>
+
+    <div class="section-label">Current periods</div>
+    <div class="cards-grid">
+      @for (period of mainCards; track period.label) {
+        <div class="summary-card" [class.active]="period.currentPeriod">
+          <div class="summary-label">{{ period.humanizedLabel }}</div>
+          <div class="summary-total">{{ period.total | currency:'BDT':'symbol-narrow':'1.2-2' }}</div>
+          <div class="summary-meta">
+            {{ period.count }} expense{{ period.count === 1 ? '' : 's' }}
+            @if (period.periodEnded) {
+              <span class="badge ended">Ended</span>
+            } @else {
+              <span class="badge ongoing">In progress</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="section-label">Previous periods</div>
+    <div class="cards-grid compact">
+      @for (period of previousCards; track period.label) {
+        <div class="summary-card muted">
+          <div class="summary-label">{{ period.humanizedLabel }}</div>
+          <div class="summary-total">{{ period.total | currency:'BDT':'symbol-narrow':'1.2-2' }}</div>
+          <div class="summary-meta">{{ period.count }} expense{{ period.count === 1 ? '' : 's' }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

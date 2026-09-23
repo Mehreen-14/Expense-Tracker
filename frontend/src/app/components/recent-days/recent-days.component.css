@@ -1,0 +1,94 @@
+.recent-days-card .card-header h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+}
+
+.recent-days-card .card-header p {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.925rem;
+}
+
+.recent-days {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.day-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  gap: 0.75rem;
+}
+
+.day-row.today {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+.day-row.no-spending {
+  opacity: 0.6;
+}
+
+.day-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.day-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-count {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.day-count.has-expenses {
+  color: var(--text-muted);
+}
+
+.day-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.day-bar-track {
+  width: 4rem;
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.day-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.day-bar-fill.today-bar {
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+}
+
+.day-amount {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}

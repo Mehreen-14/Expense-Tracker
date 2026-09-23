@@ -1,0 +1,78 @@
+<div class="card insights-card">
+  <div class="card-header">
+    <h2>Smart Insights</h2>
+    <p>Budget tracking and spending tips for this month.</p>
+  </div>
+
+  <div class="budget-section">
+    <div class="budget-header">
+      <span class="label">Monthly Budget</span>
+      @if (!editingBudget) {
+        <button type="button" class="link-btn" (click)="startEditBudget()">Edit</button>
+      }
+    </div>
+
+    @if (editingBudget) {
+      <div class="budget-edit">
+        <input type="number" min="0" step="100" [(ngModel)]="budgetInput" placeholder="Enter budget in Taka">
+        <button type="button" class="btn btn-primary btn-sm" (click)="saveBudget()">Save</button>
+      </div>
+    } @else if (insights.monthlyBudget > 0) {
+      <div class="budget-progress">
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            [class]="budgetBarClass"
+            [style.width.%]="Math.min(insights.budgetUsedPercent, 100)">
+          </div>
+        </div>
+        <div class="budget-stats">
+          <span>{{ insights.budgetUsed | currency:'BDT':'symbol-narrow':'1.0-0' }} used</span>
+          <span>{{ insights.budgetRemaining | currency:'BDT':'symbol-narrow':'1.0-0' }} left</span>
+        </div>
+        <div class="budget-percent" [class]="budgetBarClass">
+          {{ insights.budgetUsedPercent | number:'1.0-1' }}% of budget
+          @if (insights.budgetExceeded) {
+            <span class="exceeded-tag">Over budget!</span>
+          }
+        </div>
+      </div>
+    } @else {
+      <p class="budget-hint">Set a monthly budget to track how much you have left.</p>
+    }
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <span class="stat-label">Daily average</span>
+      <span class="stat-value">{{ insights.averageDailyThisMonth | currency:'BDT':'symbol-narrow':'1.0-0' }}</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-label">Month change</span>
+      <span class="stat-value" [class]="monthChangeClass">{{ monthChangeLabel }}</span>
+    </div>
+    @if (insights.topCategory) {
+      <div class="stat-box">
+        <span class="stat-label">Top category</span>
+        <span class="stat-value">{{ insights.topCategory }}</span>
+        <span class="stat-sub">{{ insights.topCategoryAmount | currency:'BDT':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+    }
+    @if (insights.largestExpenseDescription) {
+      <div class="stat-box">
+        <span class="stat-label">Largest expense</span>
+        <span class="stat-value">{{ insights.largestExpenseThisMonth | currency:'BDT':'symbol-narrow':'1.0-0' }}</span>
+        <span class="stat-sub">{{ insights.largestExpenseDescription }}</span>
+      </div>
+    }
+  </div>
+
+  @if (insights.tips.length) {
+    <div class="tips">
+      <span class="tips-label">Tips</span>
+      @for (tip of insights.tips; track tip) {
+        <div class="tip-item">{{ tip }}</div>
+      }
+    </div>
+  }
+</div>

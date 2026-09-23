@@ -1,0 +1,247 @@
+<div class="app">
+  <header class="header">
+    <div class="header-content">
+      <div class="header-brand">
+        <div class="header-logo-icon">
+          <i class="ri-wallet-3-fill"></i>
+        </div>
+        <div>
+          <h1>Expense Tracker</h1>
+          <p class="subtitle">You can track your expenses daily</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" (click)="toggleTheme()" [title]="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+          <i [class]="isDark ? 'ri-sun-line' : 'ri-moon-line'"></i>
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="toggleInsights()">
+          <i class="ri-lightbulb-line"></i> {{ showInsights ? 'Hide Insights' : 'Insights' }}
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="toggleBills()">
+          <i class="ri-bill-line"></i> {{ showBills ? 'Hide Bills' : 'Bills' }}
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="toggleSplits()">
+          <i class="ri-group-line"></i> {{ showSplits ? 'Hide Splits' : 'Splits' }}
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="toggleSendMoney()">
+          <i class="ri-send-plane-line"></i> {{ showSendMoney ? 'Hide Send' : 'Send Money' }}
+        </button>
+        <button class="btn btn-ghost" type="button" (click)="toggleShare()">
+          <i class="ri-share-line"></i> {{ showShare ? 'Hide Share' : 'Share' }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    @if (error) {
+      <div class="alert">{{ error }}</div>
+    }
+
+    @if (loading) {
+      <div class="loading">Loading your expenses...</div>
+    } @else {
+      <section class="main-grid">
+        <div class="left-column">
+          <app-expense-form
+            [expense]="editingExpense"
+            (save)="onSave($event)"
+            (cancel)="onCancelEdit()">
+          </app-expense-form>
+
+          @if (summary) {
+            <app-recent-days [recentDays]="summary.recentDays"></app-recent-days>
+          }
+        </div>
+
+        <div class="right-column">
+          <app-expense-list
+            [expenses]="expenses"
+            (edit)="onEdit($event)"
+            (duplicate)="onDuplicate($event)"
+            (delete)="onDelete($event)"
+            (toggleFavorite)="onToggleFavorite($event)"
+            (toggleRecurring)="onToggleRecurring($event)"
+            (bulkDelete)="onBulkDelete($event)">
+          </app-expense-list>
+        </div>
+      </section>
+
+      @if (summary) {
+        <section class="overview-section">
+          <app-dashboard [summary]="summary"></app-dashboard>
+          <app-spending-trend [expenses]="expenses"></app-spending-trend>
+        </section>
+      }
+    }
+  </main>
+
+  <!-- Insights Modal -->
+  @if (showInsights && insights) {
+    <div class="modal-backdrop" (click)="toggleInsights()"></div>
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Insights</h2>
+          <button class="modal-close" type="button" (click)="toggleInsights()"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="modal-body">
+          <app-insights-panel [insights]="insights" (budgetSave)="onBudgetSave($event)"></app-insights-panel>
+          @if (insights.categoryBreakdown.length > 0) {
+            <app-category-breakdown [categories]="insights.categoryBreakdown"></app-category-breakdown>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Bills Modal -->
+  @if (showBills) {
+    <div class="modal-backdrop" (click)="toggleBills()"></div>
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Bills & Due Dates</h2>
+          <button class="modal-close" type="button" (click)="toggleBills()"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="modal-body">
+          <app-bill-manager
+            [bills]="bills"
+            (save)="onBillSave($event)"
+            (delete)="onBillDelete($event)"
+            (toggleActive)="onBillToggleActive($event)">
+          </app-bill-manager>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Splits Modal -->
+  @if (showSplits) {
+    <div class="modal-backdrop" (click)="toggleSplits()"></div>
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Split Expenses</h2>
+          <button class="modal-close" type="button" (click)="toggleSplits()"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="modal-body">
+          <app-split-expenses
+            [splits]="splits"
+            (save)="onSplitSave($event)"
+            (delete)="onSplitDelete($event)"
+            (settle)="onSplitSettle($event)">
+          </app-split-expenses>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Send Money Modal -->
+  @if (showSendMoney) {
+    <div class="modal-backdrop" (click)="toggleSendMoney()"></div>
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Send Money</h2>
+          <button class="modal-close" type="button" (click)="toggleSendMoney()"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="send-money-form">
+            <div class="field">
+              <label for="send-phone">Phone Number</label>
+              <input id="send-phone" type="tel" placeholder="01XXXXXXXXX" [(ngModel)]="sendMoneyForm.phone" maxlength="11">
+            </div>
+            <div class="field">
+              <label for="send-amount">Amount (৳)</label>
+              <input id="send-amount" type="number" step="0.01" min="0.01" placeholder="0.00" [(ngModel)]="sendMoneyForm.amount">
+            </div>
+            <div class="field">
+              <label for="send-method">Payment Method</label>
+              <div class="method-chips">
+                @for (m of sendMoneyPaymentMethods; track m) {
+                  <button type="button" class="method-chip" [class.active]="sendMoneyForm.paymentMethod === m" (click)="sendMoneyForm.paymentMethod = m">
+                    {{ m }}
+                  </button>
+                }
+              </div>
+            </div>
+            <div class="field">
+              <label for="send-notes">Notes <span class="optional">(optional)</span></label>
+              <input id="send-notes" type="text" placeholder="Add a note..." [(ngModel)]="sendMoneyForm.notes">
+            </div>
+            <div class="send-money-preview">
+              <div class="preview-row">
+                <span class="preview-label">To</span>
+                <span class="preview-value">{{ sendMoneyForm.phone || '–' }}</span>
+              </div>
+              <div class="preview-row">
+                <span class="preview-label">Amount</span>
+                <span class="preview-value amount">{{ sendMoneyForm.amount ? (sendMoneyForm.amount | currency:'BDT':'symbol-narrow':'1.2-2') : '৳0.00' }}</span>
+              </div>
+              <div class="preview-row">
+                <span class="preview-label">Via</span>
+                <span class="preview-value">{{ sendMoneyForm.paymentMethod }}</span>
+              </div>
+            </div>
+            <div class="send-money-actions">
+              <button class="btn btn-primary send-btn" type="button" (click)="onSendMoneySubmit()" [disabled]="!sendMoneyForm.phone || !sendMoneyForm.amount">
+                <i class="ri-send-plane-line"></i> Send & Log Expense
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Share Modal -->
+  @if (showShare) {
+    <div class="modal-backdrop" (click)="toggleShare()"></div>
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Share Expenses</h2>
+          <button class="modal-close" type="button" (click)="toggleShare()"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="share-controls">
+            <div class="field-row">
+              <div class="field">
+                <label>From</label>
+                <input type="date" [(ngModel)]="forwardDateFrom">
+              </div>
+              <div class="field">
+                <label>To</label>
+                <input type="date" [(ngModel)]="forwardDateTo">
+              </div>
+              <button class="refresh-btn" type="button" (click)="loadForwardSummary()">Refresh</button>
+            </div>
+          </div>
+
+          @if (forwardLoading) {
+            <div class="share-loading">Generating summary...</div>
+          } @else if (forwardSummary) {
+            <div class="share-preview">
+              <pre>{{ forwardSummary.formattedText }}</pre>
+            </div>
+            <div class="share-actions">
+              <button class="share-btn copy" type="button" (click)="copyForwardText()"><i class="ri-file-copy-line"></i> Copy to Clipboard</button>
+              <button class="share-btn whatsapp" type="button" (click)="shareViaWhatsApp()"><i class="ri-whatsapp-line"></i> Share via WhatsApp</button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<app-confirm-modal
+  [show]="showDeleteConfirm"
+  title="Delete Expense"
+  message="Are you sure you want to delete this expense? This cannot be undone."
+  confirmText="Delete"
+  type="danger"
+  (confirmed)="confirmDelete()"
+  (cancelled)="showDeleteConfirm = false; pendingDeleteId = null"
+/>
